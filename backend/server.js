@@ -5,7 +5,8 @@ import Users from "./routes/user.route.js";
 import Product from "./routes/porducts.route.js";
 import Cart from "./routes/cart.route.js";
 import cors from "cors";
-
+import path from "path";
+import { fileURLToPath } from "url";
 dotenv.config();
 const app = express();
 app.use(
@@ -14,16 +15,19 @@ app.use(
       "http://localhost:3001",
       "http://localhost:3000",
       "http://localhost:5000",
-      "http://192.168.1.5:3001",
+      "http://192.168.1.5:3000",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static("uploads"));
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/users", Users);
 app.use("/api/products", Product);

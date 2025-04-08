@@ -33,18 +33,14 @@ const Products = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/products`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-
+        const response = await axios.get(`http://192.168.1.5:5000/api/products`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
         const data = response.data?.data || response.data;
-        setProducts(Array.isArray(data) ? data : []);
+        setProducts(Array.isArray(data) ? data : [data]);
         setError(null);
       } catch (error) {
         const axiosError = error as {
@@ -65,11 +61,6 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  const getImageUrl = (imagePath: string) => {
-    // Replace with your default image path
-
-    return `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
-  };
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -85,7 +76,15 @@ const Products = () => {
       </div>
     );
   }
-
+  const getImageUrl = (src: string) => {
+    if (!src) return "/placeholder.jpg"; // Fallback to placeholder image
+    if (src.startsWith("http")) return src; // Already a full URL
+    if (src.startsWith("/")) src = src.substring(1); // Remove leading slash
+    if (src.startsWith("..")) src = src.substring(3); // Remove leading ".."
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_URL || "http://192.168.1.5:5000";
+    return `${baseUrl}/${src}`;
+  };
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
@@ -114,7 +113,7 @@ const Products = () => {
                       <div className="relative aspect-square">
                         {product?.image ? (
                           <Image
-                            src={getImageUrl(product.image.src)}
+                            src={getImageUrl(product.image)}
                             onError={(e) => {
                               (e.target as HTMLImageElement).src =
                                 "/placeholder.jpg"; // Fallback to placeholder image
