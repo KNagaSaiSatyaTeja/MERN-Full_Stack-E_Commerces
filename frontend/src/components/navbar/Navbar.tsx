@@ -48,6 +48,7 @@ const Navbar: React.FC = () => {
                 <Image
                   src="/assets/logo.jpeg"
                   alt="FoodFuel Logo"
+                  sizes="icon"
                   fill
                   className="object-cover"
                   priority

@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
-
+import dotenv from "dotenv";
+dotenv.config();
 interface Product {
   _id: string;
   name: string;
@@ -21,6 +22,7 @@ interface Product {
   price: number;
   image: string;
   category: string;
+  rating: number;
 }
 const Products = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -31,14 +33,15 @@ const Products = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("/products", {
-          baseURL:
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/products`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
 
         const data = response.data?.data || response.data;
         setProducts(Array.isArray(data) ? data : []);
@@ -64,10 +67,8 @@ const Products = () => {
 
   const getImageUrl = (imagePath: string) => {
     // Replace with your default image path
-    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-      return imagePath;
-    }
-    return `${process.env.NEXT_PUBLIC_API_URL}/uploads/${imagePath}`;
+
+    return `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
   };
   if (isLoading) {
     return (
@@ -113,7 +114,7 @@ const Products = () => {
                       <div className="relative aspect-square">
                         {product?.image ? (
                           <Image
-                            src={getImageUrl(product.image) || ""}
+                            src={getImageUrl(product.image.src)}
                             onError={(e) => {
                               (e.target as HTMLImageElement).src =
                                 "/placeholder.jpg"; // Fallback to placeholder image

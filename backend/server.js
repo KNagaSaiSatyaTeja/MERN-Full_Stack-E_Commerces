@@ -13,6 +13,7 @@ app.use(
     origin: [
       "http://localhost:3001",
       "http://localhost:3000",
+      "http://localhost:5000",
       "http://192.168.1.5:3001",
     ],
     credentials: true,
@@ -34,7 +35,7 @@ mongoose
     console.log("connected successfully");
   })
   .then(
-    app.listen(process.env.PORT || 5001, () => {
+    app.listen(process.env.PORT || 5000, () => {
       console.log("conneted to port");
     })
   )
