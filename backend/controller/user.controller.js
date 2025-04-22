@@ -17,7 +17,9 @@ export const postUSer = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(body.password, salt);
-    const imagePath = req.file ? `../uploads/users/${req.file.filename}` : "";
+    const imagePath = req.file
+      ? `http://localhost:5000/uploads/users/${req.file.filename}`
+      : "";
 
     const newUser = new User({
       name: body.name,
