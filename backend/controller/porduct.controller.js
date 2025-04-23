@@ -36,7 +36,9 @@ export const createProduct = async (req, res) => {
       message: "Please fill all fields",
     });
   }
-  const imagePath = req.file ? `../uploads/products/${req.file.filename}` : "";
+  const imagePath = req.file
+    ? `http://localhost:5000/uploads/products/${req.file.filename}`
+    : "";
   const newProduct = new Product({
     name: product.name,
     price: parseInt(product.price),
