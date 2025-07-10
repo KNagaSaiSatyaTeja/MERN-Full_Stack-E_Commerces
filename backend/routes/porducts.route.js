@@ -4,7 +4,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-} from "../controller/porduct.controller.js";
+} from "../controller/product.controller.js";
 import { productUpload } from "../middlewares/multer/multer.js";
 import {
   createProductValidator,
