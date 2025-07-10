@@ -12,7 +12,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCart()
+  const { cart, removeFromCart, updateQuantity, clearCart, loading } = useCart()
   const { user } = useAuth()
   const { toast } = useToast()
   const [subtotal, setSubtotal] = useState(0)
@@ -22,12 +22,48 @@ export default function CartPage() {
     setSubtotal(total)
   }, [cart])
 
-  const handleCheckout = () => {
-    toast({
-      title: "Order placed successfully!",
-      description: "Your order has been placed and will be delivered soon.",
-    })
-    clearCart()
+  const handleCheckout = async () => {
+    try {
+      await clearCart()
+      toast({
+        title: "Order placed successfully!",
+        description: "Your order has been placed and will be delivered soon.",
+      })
+    } catch (error) {
+      toast({
+        title: "Checkout failed",
+        description: error.message,
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleRemoveFromCart = async (itemId) => {
+    try {
+      await removeFromCart(itemId)
+      toast({
+        title: "Item removed",
+        description: "Item has been removed from your cart.",
+      })
+    } catch (error) {
+      toast({
+        title: "Failed to remove item",
+        description: error.message,
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleUpdateQuantity = async (itemId, newQuantity) => {
+    try {
+      await updateQuantity(itemId, newQuantity)
+    } catch (error) {
+      toast({
+        title: "Failed to update quantity",
+        description: error.message,
+        variant: "destructive",
+      })
+    }
   }
 
   if (!user) {
@@ -38,6 +74,15 @@ export default function CartPage() {
         <Button asChild>
           <Link href="/login">Log In</Link>
         </Button>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto flex flex-col items-center justify-center px-4 py-16 text-center">
+        <h1 className="mb-4 text-3xl font-bold">Your Cart</h1>
+        <p className="mb-6 text-lg text-muted-foreground">Loading your cart...</p>
       </div>
     )
   }
@@ -77,7 +122,8 @@ export default function CartPage() {
                           variant="outline"
                           size="icon"
                           className="h-8 w-8 rounded-r-none"
-                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                          onClick={() => handleUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                          disabled={loading}
                         >
                           -
                         </Button>
@@ -86,12 +132,18 @@ export default function CartPage() {
                           variant="outline"
                           size="icon"
                           className="h-8 w-8 rounded-l-none"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                          disabled={loading}
                         >
                           +
                         </Button>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.id)}>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleRemoveFromCart(item.id)}
+                        disabled={loading}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -126,7 +178,11 @@ export default function CartPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" onClick={handleCheckout}>
+              <Button 
+                className="w-full" 
+                onClick={handleCheckout}
+                disabled={loading || cart.length === 0}
+              >
                 Checkout
               </Button>
             </CardFooter>

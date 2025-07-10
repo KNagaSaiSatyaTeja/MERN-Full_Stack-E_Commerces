@@ -46,18 +46,37 @@ export function ProductGrid() {
       return;
     }
 
-    addToCart({
+    addToCart(product).then(() => {
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart.`,
+      });
+    }).catch((error) => {
+      toast({
+        title: "Failed to add to cart",
+        description: error.message,
+        variant: "destructive",
+      });
+    });
+  };
+
+  const handleAddToCartOld = (product) => {
+    if (!user) {
+      toast({
+        title: "Please login",
+        description: "You need to be logged in to add items to your cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    /* addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.image,
       quantity: 1,
-    });
-
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    });
+    }); */
   };
 
   if (loading) {

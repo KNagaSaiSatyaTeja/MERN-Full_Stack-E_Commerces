@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const { user, logout, updateProfile } = useAuth()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [address, setAddress] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
@@ -25,6 +26,7 @@ export default function ProfilePage() {
     if (user) {
       setName(user.name)
       setEmail(user.email)
+      setAddress(user.address || "")
     } else {
       router.push("/login")
     }
@@ -35,7 +37,7 @@ export default function ProfilePage() {
     setIsLoading(true)
 
     try {
-      await updateProfile({ name, email })
+      await updateProfile({ name, email, address })
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
@@ -98,6 +100,10 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
                 </div>
                 <Separator />
                 <div className="space-y-2">

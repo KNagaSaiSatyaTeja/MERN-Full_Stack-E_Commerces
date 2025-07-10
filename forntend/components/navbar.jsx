@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation"
 
 export default function Navbar() {
   const { user, logout } = useAuth()
-  const { cart } = useCart()
+  const { cart, loading } = useCart()
   const [isScrolled, setIsScrolled] = useState(false)
   const router = useRouter()
 
@@ -114,7 +114,7 @@ export default function Navbar() {
           <Link href="/cart" className="relative">
             <Button variant="ghost" size="icon">
               <ShoppingCart className="h-5 w-5" />
-              {cart.length > 0 && (
+              {!loading && cart.length > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                   {cart.length}
                 </span>

@@ -14,7 +14,8 @@ export function AuthProvider({ children }) {
     const storedUser = localStorage.getItem("user")
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser))
+        const userData = JSON.parse(storedUser)
+        setUser(userData)
       } catch (error) {
         console.error("Failed to parse stored user:", error)
         localStorage.removeItem("user")
@@ -24,15 +25,25 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async (email, password) => {
-    const userData = await loginUser(email, password)
-    setUser(userData)
-    localStorage.setItem("user", JSON.stringify(userData))
-    return userData
+    try {
+      const userData = await loginUser(email, password)
+      setUser(userData)
+      localStorage.setItem("user", JSON.stringify(userData))
+      return userData
+    } catch (error) {
+      console.error("Login failed:", error)
+      throw error
+    }
   }
 
-  const signup = async (name, email, password) => {
-    const userData = await signupUser(name, email, password)
-    return userData
+  const signup = async (name, email, password, address) => {
+    try {
+      const userData = await signupUser(name, email, password, address)
+      return userData
+    } catch (error) {
+      console.error("Signup failed:", error)
+      throw error
+    }
   }
 
   const logout = () => {
@@ -41,10 +52,19 @@ export function AuthProvider({ children }) {
   }
 
   const updateProfile = async (data) => {
-    const updatedUser = await updateUserProfile(user.id, data)
-    setUser(updatedUser)
-    localStorage.setItem("user", JSON.stringify(updatedUser))
-    return updatedUser
+    if (!user) {
+      throw new Error("No user logged in")
+    }
+
+    try {
+      const updatedUser = await updateUserProfile(user.id, data)
+      setUser(updatedUser)
+      localStorage.setItem("user", JSON.stringify(updatedUser))
+      return updatedUser
+    } catch (error) {
+      console.error("Profile update failed:", error)
+      throw error
+    }
   }
 
   return (
