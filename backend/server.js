@@ -36,7 +36,7 @@ mongoose
   })
   .then(
     app.listen(process.env.PORT || 5000, () => {
-      console.log("conneted to port");
+      console.log("conneted to port", process.env.PORT || 5000);
     })
   )
   .catch((err) => {
