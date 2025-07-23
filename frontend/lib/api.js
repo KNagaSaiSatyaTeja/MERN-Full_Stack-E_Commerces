@@ -8,13 +8,13 @@ const API_BASE_URL = "http://localhost:5000/api";
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 const handleImage = (imageUrl) => {
   if (!imageUrl) return "/placeholder.svg?height=300&width=300";
-  
+
   if (imageUrl.startsWith("http")) {
     return imageUrl;
   } else {
@@ -29,6 +29,7 @@ export const fetchProducts = async () => {
   try {
     const response = await api.get("/products");
     const data = response.data;
+    console.log("Fetched products:", data, "\n----\n", response);
 
     if (!data.success) {
       throw new Error(data.message || "Failed to fetch products");
@@ -47,7 +48,9 @@ export const fetchProducts = async () => {
     return products;
   } catch (error) {
     console.error("Error fetching products:", error);
-    throw new Error(error.response?.data?.message || "Failed to fetch products");
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch products"
+    );
   }
 };
 
@@ -80,13 +83,13 @@ export const fetchProductById = async (id) => {
 export const createProduct = async (productData) => {
   try {
     const formData = new FormData();
-    Object.keys(productData).forEach(key => {
+    Object.keys(productData).forEach((key) => {
       formData.append(key, productData[key]);
     });
 
     const response = await api.post("/products/create", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
 
@@ -102,20 +105,22 @@ export const createProduct = async (productData) => {
     };
   } catch (error) {
     console.error("Error creating product:", error);
-    throw new Error(error.response?.data?.message || "Failed to create product");
+    throw new Error(
+      error.response?.data?.message || "Failed to create product"
+    );
   }
 };
 
 export const updateProduct = async (id, productData) => {
   try {
     const formData = new FormData();
-    Object.keys(productData).forEach(key => {
+    Object.keys(productData).forEach((key) => {
       formData.append(key, productData[key]);
     });
 
     const response = await api.put(`/products/update/${id}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
 
@@ -131,7 +136,9 @@ export const updateProduct = async (id, productData) => {
     };
   } catch (error) {
     console.error("Error updating product:", error);
-    throw new Error(error.response?.data?.message || "Failed to update product");
+    throw new Error(
+      error.response?.data?.message || "Failed to update product"
+    );
   }
 };
 
@@ -147,22 +154,29 @@ export const deleteProduct = async (id) => {
     return data;
   } catch (error) {
     console.error("Error deleting product:", error);
-    throw new Error(error.response?.data?.message || "Failed to delete product");
+    throw new Error(
+      error.response?.data?.message || "Failed to delete product"
+    );
   }
 };
 
 // Users API
-export const signupUser = async (name, email, password, address = "Default Address") => {
+export const signupUser = async (
+  name,
+  email,
+  password,
+  address = "Default Address"
+) => {
   try {
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('address', address);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("address", address);
 
     const response = await api.post("/users/create", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
 
@@ -178,7 +192,9 @@ export const signupUser = async (name, email, password, address = "Default Addre
     };
   } catch (error) {
     console.error("Error signing up:", error);
-    throw new Error(error.response?.data?.message || "Failed to create account");
+    throw new Error(
+      error.response?.data?.message || "Failed to create account"
+    );
   }
 };
 
@@ -208,7 +224,7 @@ export const loginUser = async (email, password) => {
 export const updateUserProfile = async (userId, userData) => {
   try {
     const formData = new FormData();
-    Object.keys(userData).forEach(key => {
+    Object.keys(userData).forEach((key) => {
       if (userData[key] !== undefined && userData[key] !== null) {
         formData.append(key, userData[key]);
       }
@@ -216,7 +232,7 @@ export const updateUserProfile = async (userId, userData) => {
 
     const response = await api.patch(`/users/update/${userId}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
 
@@ -232,7 +248,9 @@ export const updateUserProfile = async (userId, userData) => {
     };
   } catch (error) {
     console.error("Error updating profile:", error);
-    throw new Error(error.response?.data?.message || "Failed to update profile");
+    throw new Error(
+      error.response?.data?.message || "Failed to update profile"
+    );
   }
 };
 
@@ -281,7 +299,7 @@ export const getAllUsers = async () => {
       throw new Error(data.message || "Failed to fetch users");
     }
 
-    const users = data.allUsers.map(user => ({
+    const users = data.allUsers.map((user) => ({
       ...user,
       id: user._id,
       avatar: handleImage(user.image),
@@ -302,7 +320,7 @@ export const getCart = async (userId) => {
 
     if (!data.success) {
       // If cart doesn't exist, return empty cart
-      if (response.status === 404) {
+      if (response.status === 404 || data.message === "Cart not found") {
         return { products: [] };
       }
       throw new Error(data.message || "Failed to fetch cart");
@@ -311,7 +329,7 @@ export const getCart = async (userId) => {
     // Transform cart data for frontend compatibility
     const cart = {
       ...data.data,
-      products: data.data.products.map(item => ({
+      products: data.data.products.map((item) => ({
         id: item.product_id._id,
         name: item.product_id.name,
         price: item.product_id.price,
@@ -319,7 +337,7 @@ export const getCart = async (userId) => {
         quantity: item.quantity,
         category: item.product_id.category,
         description: item.product_id.description,
-      }))
+      })),
     };
 
     return cart;
@@ -336,7 +354,7 @@ export const addToCart = async (userId, products) => {
   try {
     const response = await api.post("/cart/create", {
       userId,
-      products: Array.isArray(products) ? products : [products]
+      products: Array.isArray(products) ? products : [products],
     });
 
     const data = response.data;
@@ -354,7 +372,7 @@ export const addToCart = async (userId, products) => {
 export const removeFromCart = async (userId, productId) => {
   try {
     const response = await api.delete("/cart/removeFromCart", {
-      data: { userId, productId }
+      data: { userId, productId },
     });
 
     const data = response.data;
@@ -365,7 +383,9 @@ export const removeFromCart = async (userId, productId) => {
     return data.data;
   } catch (error) {
     console.error("Error removing from cart:", error);
-    throw new Error(error.response?.data?.message || "Failed to remove from cart");
+    throw new Error(
+      error.response?.data?.message || "Failed to remove from cart"
+    );
   }
 };
 
@@ -388,7 +408,7 @@ export const clearCart = async (userId) => {
 export const deleteSelectedProducts = async (userId, productIds) => {
   try {
     const response = await api.delete("/cart/deleteSelectedPorducte", {
-      data: { userId, productIds }
+      data: { userId, productIds },
     });
 
     const data = response.data;
@@ -399,7 +419,9 @@ export const deleteSelectedProducts = async (userId, productIds) => {
     return data.data;
   } catch (error) {
     console.error("Error deleting selected products:", error);
-    throw new Error(error.response?.data?.message || "Failed to delete selected products");
+    throw new Error(
+      error.response?.data?.message || "Failed to delete selected products"
+    );
   }
 };
 
