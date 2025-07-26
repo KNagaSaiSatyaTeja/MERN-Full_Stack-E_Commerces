@@ -6,6 +6,7 @@ import {
   getUserByEmail,
   getUserById,
   postUSer,
+  loginUser,
 } from "../controller/user.controller.js";
 import { userUpload } from "../middlewares/multer/multer.js";
 import {
@@ -15,6 +16,7 @@ import {
   idValidator,
 } from "../validators/userValidator.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
+import { authenticateToken, requireAdmin } from "../middlewares/auth.js";
 
 const router = express.Router();
 
