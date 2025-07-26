@@ -20,6 +20,7 @@ import { authenticateToken, requireAdmin } from "../middlewares/auth.js";
 
 const router = express.Router();
 
+// Public routes
 router.post(
   "/create",
   userUpload.single("image"),
@@ -28,7 +29,10 @@ router.post(
   postUSer
 );
 
-router.get("/", getAllUser);
+router.post("/login", loginUser);
+
+// Protected routes
+router.get("/", authenticateToken, requireAdmin, getAllUser);
 
 router.get("/byEmail", emailValidator, validateRequest, getUserByEmail);
 
@@ -36,12 +40,13 @@ router.get("/byUserId/:id", idValidator, validateRequest, getUserById);
 
 router.patch(
   "/update/:id",
+  authenticateToken,
   userUpload.single("image"),
   updateUserValidator,
   validateRequest,
   editUser
 );
 
-router.delete("/delete/:id", idValidator, validateRequest, deleteUser);
+router.delete("/delete/:id", authenticateToken, requireAdmin, idValidator, validateRequest, deleteUser);
 
 export default router;
