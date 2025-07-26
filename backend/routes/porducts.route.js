@@ -11,13 +11,18 @@ import {
   updateProductValidator,
 } from "../validators/productValidator.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
+import { authenticateToken, requireAdmin } from "../middlewares/auth.js";
 
 const router = express.Router();
 
+// Public route - anyone can view products
 router.get("/", getAllProducts);
 
+// Admin only routes - require authentication and admin role
 router.post(
   "/create",
+  authenticateToken,
+  requireAdmin,
   productUpload.single("image"),
   createProductValidator,
   validateRequest,
@@ -26,12 +31,14 @@ router.post(
 
 router.put(
   "/update/:id",
+  authenticateToken,
+  requireAdmin,
   productUpload.single("image"),
   updateProductValidator,
   validateRequest,
   updateProduct
 );
 
-router.delete("/delete/:id", deleteProduct);
+router.delete("/delete/:id", authenticateToken, requireAdmin, deleteProduct);
 
 export default router;
