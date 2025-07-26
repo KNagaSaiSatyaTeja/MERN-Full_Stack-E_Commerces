@@ -34,6 +34,7 @@ app.use("/api/users", Users);
 app.use("/api/products", Product);
 app.use("/api/cart", Cart);
 app.use("/api/admin", Admin);
+app.use("/api/orders", Order);
 
 // Health check
 app.get("/api/health", (req, res) => {
