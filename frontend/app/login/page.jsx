@@ -23,12 +23,18 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      await login(email, password)
+      const userData = await login(email, password)
       toast({
         title: "Login successful",
         description: "You have been logged in successfully.",
       })
-      router.push("/")
+      
+      // Redirect to admin panel if user is admin, otherwise to home
+      if (userData.role === "admin") {
+        router.push("/admin")
+      } else {
+        router.push("/")
+      }
     } catch (error) {
       toast({
         title: "Login failed",
