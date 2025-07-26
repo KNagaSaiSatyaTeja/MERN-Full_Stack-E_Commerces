@@ -483,3 +483,78 @@ export const fetchOrders = async () => {
   await new Promise((resolve) => setTimeout(resolve, 800));
   return orders;
 };
+
+// Admin API functions
+export const getDashboardStats = async () => {
+  try {
+    const response = await api.get("/admin/dashboard/stats");
+    const data = response.data;
+
+    if (!data.status) {
+      throw new Error(data.message || "Failed to fetch dashboard stats");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching dashboard stats:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch dashboard stats");
+  }
+};
+
+export const getAllUsersForAdmin = async () => {
+  try {
+    const response = await api.get("/admin/users");
+    const data = response.data;
+
+    if (!data.status) {
+      throw new Error(data.message || "Failed to fetch users");
+    }
+
+    const users = data.data.map((user) => ({
+      ...user,
+      id: user._id,
+      avatar: handleImage(user.image),
+    }));
+
+    return users;
+  } catch (error) {
+    console.error("Error fetching users for admin:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch users");
+  }
+};
+
+export const updateUserRole = async (userId, role) => {
+  try {
+    const response = await api.patch(`/admin/users/${userId}/role`, { role });
+    const data = response.data;
+
+    if (!data.status) {
+      throw new Error(data.message || "Failed to update user role");
+    }
+
+    return {
+      ...data.data,
+      id: data.data._id,
+      avatar: handleImage(data.data.image),
+    };
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    throw new Error(error.response?.data?.message || "Failed to update user role");
+  }
+};
+
+export const deleteUserByAdmin = async (userId) => {
+  try {
+    const response = await api.delete(`/admin/users/${userId}`);
+    const data = response.data;
+
+    if (!data.status) {
+      throw new Error(data.message || "Failed to delete user");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error(error.response?.data?.message || "Failed to delete user");
+  }
+};
