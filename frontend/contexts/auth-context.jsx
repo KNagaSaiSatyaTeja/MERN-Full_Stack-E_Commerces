@@ -56,6 +56,10 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
   };
 
+  const isAdmin = () => {
+    return user && user.role === "admin";
+  };
+
   const updateProfile = async (data) => {
     if (!user) {
       throw new Error("No user logged in")
