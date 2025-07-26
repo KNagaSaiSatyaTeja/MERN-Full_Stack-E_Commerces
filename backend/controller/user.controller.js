@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import User from "../models/User.js";
 import Cart from "../models/cart.js";
 import bcrypt from "bcryptjs";
+import { generateToken } from "../utils/jwt.js";
 
 export const postUSer = async (req, res) => {
   const body = req.body;
