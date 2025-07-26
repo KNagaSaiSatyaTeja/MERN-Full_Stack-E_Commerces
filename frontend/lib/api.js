@@ -453,35 +453,53 @@ export const deleteSelectedProducts = async (userId, productIds) => {
   }
 };
 
-// Mock orders for now (you can implement orders API later)
-export const fetchOrders = async () => {
-  // Mock order data since orders API is not implemented yet
-  const orders = [
-    {
-      id: "ORD-1001",
-      date: "2023-05-15T10:30:00.000Z",
-      status: "Delivered",
-      items: 3,
-      total: 28.97,
-    },
-    {
-      id: "ORD-1002",
-      date: "2023-06-20T14:45:00.000Z",
-      status: "Shipped",
-      items: 2,
-      total: 35.98,
-    },
-    {
-      id: "ORD-1003",
-      date: "2023-07-05T09:15:00.000Z",
-      status: "Processing",
-      items: 4,
-      total: 42.46,
-    },
-  ];
+// Orders API
+export const createOrder = async (orderData) => {
+  try {
+    const response = await api.post("/orders/create", orderData);
+    const data = response.data;
 
-  await new Promise((resolve) => setTimeout(resolve, 800));
-  return orders;
+    if (!data.status) {
+      throw new Error(data.message || "Failed to create order");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Error creating order:", error);
+    throw new Error(error.response?.data?.message || "Failed to create order");
+  }
+};
+
+export const getUserOrders = async () => {
+  try {
+    const response = await api.get("/orders/my-orders");
+    const data = response.data;
+
+    if (!data.status) {
+      throw new Error(data.message || "Failed to fetch orders");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch orders");
+  }
+};
+
+export const processPayment = async (paymentData) => {
+  try {
+    const response = await api.post("/orders/process-payment", paymentData);
+    const data = response.data;
+
+    if (!data.status) {
+      throw new Error(data.message || "Payment failed");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    throw new Error(error.response?.data?.message || "Payment failed");
+  }
 };
 
 // Admin API functions
@@ -556,5 +574,73 @@ export const deleteUserByAdmin = async (userId) => {
   } catch (error) {
     console.error("Error deleting user:", error);
     throw new Error(error.response?.data?.message || "Failed to delete user");
+  }
+};
+
+// Admin Orders API
+export const getAllOrdersForAdmin = async () => {
+  try {
+    const response = await api.get("/orders");
+    const data = response.data;
+
+    if (!data.status) {
+      throw new Error(data.message || "Failed to fetch orders");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching orders for admin:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch orders");
+  }
+};
+
+export const updateOrderStatus = async (orderId, status) => {
+  try {
+    const response = await api.patch(`/orders/${orderId}/status`, { status });
+    const data = response.data;
+
+    if (!data.status) {
+      throw new Error(data.message || "Failed to update order status");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    throw new Error(error.response?.data?.message || "Failed to update order status");
+  }
+};
+
+// Mock orders for now (you can implement orders API later)
+export const fetchOrders = async () => {
+  try {
+    return await getUserOrders();
+  } catch (error) {
+    // Mock order data since orders API is not implemented yet
+    const orders = [
+      {
+        id: "ORD-1001",
+        date: "2023-05-15T10:30:00.000Z",
+        status: "Delivered",
+        items: 3,
+        total: 28.97,
+      },
+      {
+        id: "ORD-1002",
+        date: "2023-06-20T14:45:00.000Z",
+        status: "Shipped",
+        items: 2,
+        total: 35.98,
+      },
+      {
+        id: "ORD-1003",
+        date: "2023-07-05T09:15:00.000Z",
+        status: "Processing",
+        items: 4,
+        total: 42.46,
+      },
+    ];
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    return orders;
   }
 };
