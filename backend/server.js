@@ -5,6 +5,7 @@ import Users from "./routes/user.route.js";
 import Product from "./routes/porducts.route.js";
 import Cart from "./routes/cart.route.js";
 import Admin from "./routes/admin.route.js";
+import Order from "./routes/order.route.js";
 import cors from "cors";
 
 dotenv.config();
