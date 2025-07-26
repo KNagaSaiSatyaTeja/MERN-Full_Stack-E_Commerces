@@ -9,6 +9,7 @@ import {
   LayoutDashboard, 
   Package, 
   Users, 
+  ShoppingBag,
   Settings, 
   LogOut,
   Home 
@@ -24,6 +25,11 @@ const sidebarItems = [
     title: "Products",
     href: "/admin/products",
     icon: Package,
+  },
+  {
+    title: "Orders",
+    href: "/admin/orders",
+    icon: ShoppingBag,
   },
   {
     title: "Users",
