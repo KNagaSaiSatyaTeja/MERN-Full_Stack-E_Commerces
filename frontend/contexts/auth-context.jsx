@@ -29,15 +29,16 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const userData = await loginUser(email, password)
-      setUser(userData)
-      localStorage.setItem("user", JSON.stringify(userData))
-      return userData
+      const userData = await loginUser(email, password);
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("token", userData.token);
+      return userData;
     } catch (error) {
-      console.error("Login failed:", error)
-      throw error
+      console.error("Login failed:", error);
+      throw error;
     }
-  }
+  };
 
   const signup = async (name, email, password, address) => {
     try {
