@@ -227,24 +227,25 @@ export const signupUser = async (
 
 export const loginUser = async (email, password) => {
   try {
-    // Get user by email first
-    const response = await api.get(`/users/byEmail?email=${email}`);
+    const response = await api.post("/users/login", { email, password });
     const data = response.data;
 
     if (!data.status) {
-      throw new Error("Invalid email or password");
+      throw new Error(data.message || "Login failed");
     }
 
-    // In a real app, you would verify password on backend
-    // For now, we'll simulate login success
+    // Store token and user data
+    localStorage.setItem("token", data.data.token);
+    
     return {
-      ...data.data,
-      id: data.data._id,
-      avatar: handleImage(data.data.image),
+      ...data.data.user,
+      id: data.data.user._id,
+      avatar: handleImage(data.data.user.image),
+      token: data.data.token
     };
   } catch (error) {
     console.error("Error logging in:", error);
-    throw new Error("Invalid email or password");
+    throw new Error(error.response?.data?.message || "Invalid email or password");
   }
 };
 
