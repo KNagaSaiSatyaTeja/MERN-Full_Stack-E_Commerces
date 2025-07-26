@@ -28,6 +28,7 @@ export const postUSer = async (req, res) => {
       email: body.email,
       password: hashedPassword,
       image: imagePath,
+      role: body.role || "user" // Allow role assignment, default to user
     });
 
     await newUser.save();
@@ -43,6 +44,59 @@ export const postUSer = async (req, res) => {
     return res.status(500).json({
       status: false,
       message: `Server error: ${error.message}`,
+    });
+  }
+};
+
+// New login function
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        status: false,
+        message: "Email and password are required"
+      });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({
+        status: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    // Check password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        status: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user);
+
+    // Return user data without password
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    return res.status(200).json({
+      status: true,
+      message: "Login successful",
+      data: {
+        user: userResponse,
+        token
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: `Server error: ${error.message}`
     });
   }
 };
