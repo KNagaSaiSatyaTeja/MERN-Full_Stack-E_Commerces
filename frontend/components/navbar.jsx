@@ -16,12 +16,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ModeToggle } from "@/components/mode-toggle"
-import { Menu, Search, ShoppingCart, User } from "lucide-react"
+import { Menu, Search, ShoppingCart, User, Shield } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 export default function Navbar() {
-  const { user, logout } = useAuth()
+  const { user, logout, isAdmin } = useAuth()
   const { cart, loading } = useCart()
   const [isScrolled, setIsScrolled] = useState(false)
   const router = useRouter()
@@ -70,9 +70,17 @@ export default function Navbar() {
                     Cart
                   </Link>
                   {user ? (
-                    <Link href="/profile" className="font-medium">
-                      Profile
-                    </Link>
+                    <>
+                      <Link href="/profile" className="font-medium">
+                        Profile
+                      </Link>
+                      {isAdmin() && (
+                        <Link href="/admin" className="font-medium text-red-600">
+                          <Shield className="inline-block w-4 h-4 mr-1" />
+                          Admin Panel
+                        </Link>
+                      )}
+                    </>
                   ) : (
                     <>
                       <Link href="/login" className="font-medium">
@@ -134,7 +142,20 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  <div>
+                    <div className="font-medium">{user.name}</div>
+                    <div className="text-xs text-muted-foreground flex items-center gap-1">
+                      {user.role === "admin" && (
+                        <>
+                          <Shield className="w-3 h-3" />
+                          Admin
+                        </>
+                      )}
+                      {user.role === "user" && "User"}
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>
@@ -145,6 +166,17 @@ export default function Navbar() {
                 <DropdownMenuItem asChild>
                   <Link href="/profile?tab=orders">Orders</Link>
                 </DropdownMenuItem>
+                {isAdmin() && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="text-red-600">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Panel
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
